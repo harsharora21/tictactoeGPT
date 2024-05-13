@@ -116,7 +116,9 @@ if doanything:
     if countLegalOnly:
         #s=subprocess.check_output("cd /home/harsh/ThesisMSc/nanoGPT;python3.11 sample.py --out_dir=out-custom-char --seed=1337",shell=True)
         curdir = os.path.dirname(os.path.realpath(__file__))
-        s=subprocess.check_output(f"cd {curdir};python3.11 sample.py --out_dir=out-custom-char --seed=1337",shell=True)
+        cmd = f"cd {curdir};python3.11 sample.py --out_dir=out-custom-char --seed=1337"
+        cmd4 = f"cd {curdir};python3 sample.py --start=\\'4\\' --out_dir=out-custom-char --max_new_tokens=44 --num_samples=100"
+        s=subprocess.check_output(cmd4,shell=True)
         s=s.decode('utf-8')
         if useAbc:
             l = list(map(convFromA1,filter(lambda x:x!='' and '$' in x,s.split('\n')[4:])) )
@@ -129,8 +131,11 @@ if doanything:
     else:
         n=10**4
         per = 0.1 #percentage split between 3x3 and 4x4
+        wper = [0,0,0,1,0.1]+[0.01]*5
         if useAbc:
-            data = [convToA1(genGame(n=3)) for i in range(n)] + [convToA1(genGame(n=4)) for i in range(int(per*n))]
+            data=[]
+            for k in range(10):
+                data += [convToA1(genGame(n=k)) for i in range(int(wper[k]*n))]
         else:
             data = [genGame(n=3) for i in range(n)] + [genGame(n=4) for i in range(int(per*n))]
         random.shuffle(data)
